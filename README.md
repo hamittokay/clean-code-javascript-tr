@@ -226,20 +226,16 @@ menuOlustur({
 **[⬆ en başa dön](#içindekiler)**
 
 
-### Fonksiyonlar tek bir görevi yerine getirmelidir
-Bu yazılım mühendisliğindeki en önemli kuraldır. Bir fonksiyon birden fazla
-işi yerine getirmeye çalıştığı zaman; onu oluşturmayı, test etmeyi ve onla ilgili
-düşünmeyi zorlaştırır. Fonksiyonunuzu tek bir görevi yerine getirmekle yükümlü
-kıldığınız zaman onu daha kolay düzenleyebilir, daha kolay dokunabilir bir hale getirmiş olacaksınız.
-Sadece bu maddeleri yerine getirmeniz bile sizi bir çok geliştiricinin önüne geçirecektir.
+### Fonksiyonlar Tek Bir Şey Yapmalı
+Bu yazılım mühendisliğinde en önemli kuraldır. Fonksiyonlar birden fazla iş yaptığında, onları düzenlemek, test etmek ve hakkında fikir sahibi olmak oldukça zorlaşır. Bir fonksiyonu izole ettiğinizde, daha kolay refactor edilebilir ve daha temiz, okunabilir bir kod haline gelir. Bu kılavuzdan aldığınız tek bilgi bu olsa bile birçok geliştiricinin önde olacaksınız.
 
 **Kötü:**
 ```javascript
-function emailAboneleri(aboneler) {
-  aboneler.forEach((abone) => {
-    const aboneKaydi = veritabani.sorgula(abone);
-    if (aboneKaydi.aktifMi()) {
-      email(abone);
+function musterilereMailYolla(musteriler) {
+  musteriler.forEach((musteri) => {
+    const musteriKaydi = database.sorgula(musteri);
+    if (musteriKaydi.aktifMi()) {
+      email(musteri);
     }
   });
 }
@@ -247,20 +243,20 @@ function emailAboneleri(aboneler) {
 
 **İyi:**
 ```javascript
-function aktifEmailAboneleri(aboneler) {
-  aboneler
-    .filter(aboneAktifMi)
+function aktifMusterilereEmailGonder(musteriler) {
+  musteriler
+    .filter(aktifMusteriMi)
     .forEach(email);
 }
 
-function aboneAktifMi(abone) {
-  const aboneKaydi = veritabani.sorgula(abone);
-  return aboneKaydi.aktifMi();
+function aktifMusteriMi(musteri) {
+  const musteriKaydi = database.sorgula(cliemusterint);
+  return musteriKaydi.aktifMi();
 }
 ```
 **[⬆ en başa dön](#içindekiler)**
 
-### Fonksiyon adları ne yaptığını söylemeli
+### Fonksiyon İsimleri Ne Yaptıklarını Söylemeli
 
 **Kötü:**
 ```javascript
@@ -280,8 +276,8 @@ function tariheAyEkle(ay, tarih) {
   // ...
 }
 
-const date = new Date();
-tariheAyEkle(1, date);
+const tarih = new Date();
+tariheAyEkle(1, tarih);
 ```
 **[⬆ en başa dön](#içindekiler)**
 
@@ -434,49 +430,49 @@ function personelListesiniGoster(personeller) {
 ```
 **[⬆ en başa dön](#içindekiler)**
 
-### Set default objects with Object.assign
+### Varsayılan Nesneleri Object.assign ile Atayın
 
 **Kötü:**
 ```javascript
-const menuConfig = {
-  title: null,
-  body: 'Bar',
-  buttonText: null,
-  cancellable: true
+const menuAyari = {
+  baslik: null,
+  icerik: 'Deneme',
+  butonYazisi: null,
+  iptalEdilebilir: true
 };
 
-function createMenu(config) {
-  config.title = config.title || 'Foo';
-  config.body = config.body || 'Bar';
-  config.buttonText = config.buttonText || 'Baz';
-  config.cancellable = config.cancellable !== undefined ? config.cancellable : true;
+function menuOlustur(ayar) {
+  ayar.baslik = ayar.baslik || 'Bir Baslik';
+  ayar.icerik = ayar.icerik || 'Deneme';
+  ayar.butonYazisi = ayar.butonYazisi || 'Kaydet';
+  ayar.iptalEdilebilir = ayar.iptalEdilebilir !== undefined ? ayar.iptalEdilebilir : true;
 }
 
-createMenu(menuConfig);
+menuOlustur(menuAyari);
 ```
 
 **İyi:**
 ```javascript
-const menuConfig = {
-  title: 'Order',
-  // User did not include 'body' key
-  buttonText: 'Send',
-  cancellable: true
+const menuAyari = {
+  baslik: 'Bir Baslik',
+  // Geliştirici 'icerik' key'ini burada belirtmedi
+  butonYazisi: 'Kaydet',
+  iptalEdilebilir: true
 };
 
-function createMenu(config) {
-  config = Object.assign({
-    title: 'Foo',
-    body: 'Bar',
-    buttonText: 'Baz',
-    cancellable: true
-  }, config);
+function menuOlustur(ayar) {
+  ayar = Object.assign({
+    baslik: 'Bir Baslik',
+    icerik: 'Deneme',
+    butonYazisi: 'Kaydet',
+    iptalEdilebilir: true
+  }, ayar);
 
-  // config now equals: {title: "Order", body: "Bar", buttonText: "Send", cancellable: true}
+  // ayar simdi: {baslik: "Bir Baslik", icerik: "Deneme", butonYazisi: "Kaydet", iptalEdilebilir: true}
   // ...
 }
 
-createMenu(menuConfig);
+menuOlustur(menuAyari);
 ```
 **[⬆ en başa dön](#içindekiler)**
 
@@ -706,26 +702,26 @@ if (shouldShowSpinner(fsmInstance, listNodeInstance)) {
 ```
 **[⬆ en başa dön](#içindekiler)**
 
-### Avoid negative conditionals
+### Negatif Koşullardan Kaçının
 
 **Kötü:**
 ```javascript
-function isDOMNodeNotPresent(node) {
+function domYaratilmadi(node) {
   // ...
 }
 
-if (!isDOMNodeNotPresent(node)) {
+if (!domYaratilmadi(node)) {
   // ...
 }
 ```
 
 **İyi:**
 ```javascript
-function isDOMNodePresent(node) {
+function domYaratildi(node) {
   // ...
 }
 
-if (isDOMNodePresent(node)) {
+if (domYaratildi(node)) {
   // ...
 }
 ```
@@ -787,27 +783,26 @@ class Cessna extends Airplane {
 ```
 **[⬆ en başa dön](#içindekiler)**
 
-### Avoid type-checking (part 1)
-JavaScript is untyped, which means your functions can take any type of argument.
-Sometimes you are bitten by this freedom and it becomes tempting to do
-type-checking in your functions. There are many ways to avoid having to do this.
-The first thing to consider is consistent APIs.
+### Tip Kontrolünden Kaçının (Bölüm 1)
+JavaScript tip güvensiz bir dildir, yani fonksiyonlarınız herhangi bir tipte argüman alabilir.
+Bazen bu özgürlük can yakıcı olabiliyor haliyle fonksiyonlarınızda tip kontrolü yapmak cazip hale gelebiliyor. Bundan kaçınmanın birçok yolu var.
+Dikkate alınması gereken ilk şey tutarlı API'lar yazmanız.
 
 **Kötü:**
 ```javascript
-function travelToTexas(vehicle) {
-  if (vehicle instanceof Bicycle) {
-    vehicle.pedal(this.currentLocation, new Location('texas'));
-  } else if (vehicle instanceof Car) {
-    vehicle.drive(this.currentLocation, new Location('texas'));
+function nigdeyeZiyaret(arac) {
+  if (arac instanceof Bisiklet) {
+    arac.pedaliCevir(this.mevcutLokasyon, new Lokasyon('nigde'));
+  } else if (arac instanceof Araba) {
+    arac.sur(this.mevcutLokasyon, new Lokasyon('nigde'));
   }
 }
 ```
 
 **İyi:**
 ```javascript
-function travelToTexas(vehicle) {
-  vehicle.move(this.currentLocation, new Location('texas'));
+function nigdeyeZiyaret(arac) {
+  arac.hareketEt(this.mevcutLokasyon, new Lokasyon('nigde'));
 }
 ```
 **[⬆ en başa dön](#içindekiler)**
@@ -868,34 +863,33 @@ for (let i = 0; i < list.length; i++) {
 ```
 **[⬆ en başa dön](#içindekiler)**
 
-### Remove dead code
-Dead code is just as bad as duplicate code. There's no reason to keep it in
-your codebase. If it's not being called, get rid of it! It will still be safe
-in your version history if you still need it.
+### Ölü Kodları Silin
+Ölü kod da tekrarlı kodlar kadar kötüdür. Kodlarınızda ölü kod saklamanız için herhangi bir neden yoktur.
+Eğer herhangi bir yerde çağrılmıyorlarsa onlardan kurtulun. İhtiyacınız olduğunda, versiyon kontrol sisteminde bulabilirsiniz.
 
 **Kötü:**
 ```javascript
-function oldRequestModule(url) {
+function eskiHttpRequestModulu(url) {
   // ...
 }
 
-function newRequestModule(url) {
+function yeniHttpRequestModulu(url) {
   // ...
 }
 
-const req = newRequestModule;
-inventoryTracker('apples', req, 'www.inventory-awesome.io');
+const istek = yeniHttpRequestModulu;
+envanterTakibi('elmalar', istek, 'www.envantertakibi.com');
 
 ```
 
 **İyi:**
 ```javascript
-function newRequestModule(url) {
+function yeniHttpRequestModulu(url) {
   // ...
 }
 
-const req = newRequestModule;
-inventoryTracker('apples', req, 'www.inventory-awesome.io');
+const istek = yeniHttpRequestModulu;
+envanterTakibi('elmalar', istek, 'www.envantertakibi.com');
 ```
 **[⬆ en başa dön](#içindekiler)**
 
@@ -1714,25 +1708,25 @@ describe('MakeMomentJSGreatAgain', () => {
 ```
 **[⬆ en başa dön](#içindekiler)**
 
-## **Concurrency**
-### Use Promises, not callbacks
-Callbacks aren't clean, and they cause excessive amounts of nesting. With ES2015/ES6,
-Promises are a built-in global type. Use them!
+## **Eşzamanlılık**
+### Promiseleri kullan,Callbackleri değil.
+Callbackler kusursuz değildir , ve aşırı miktarda iç içe geçmeye neden olurlar. ES2015/ES6
+ile birlikte Promiseler bir yerleşik evrensel tiptir. Onları kullan!
 
 **Kötü:**
 ```javascript
 import { get } from 'request';
 import { writeFile } from 'fs';
 
-get('https://en.wikipedia.org/wiki/Robert_Cecil_Martin', (requestErr, response) => {
+get('https://en.wikipedia.org/wiki/Robert_Cecil_Martin', (istekHatasi, cevap) => {
   if (requestErr) {
-    console.error(requestErr);
+    console.error(istekHatasi);
   } else {
-    writeFile('article.html', response.body, (writeErr) => {
-      if (writeErr) {
-        console.error(writeErr);
+    writeFile('makale.html', cevap.body, (yazmaHatasi) => {
+      if (yazmaHatasi) {
+        console.error(yazmaHatasi);
       } else {
-        console.log('File written');
+        console.log('Dosya yazildi');
       }
     });
   }
@@ -1746,25 +1740,25 @@ import { get } from 'request';
 import { writeFile } from 'fs';
 
 get('https://en.wikipedia.org/wiki/Robert_Cecil_Martin')
-  .then((response) => {
-    return writeFile('article.html', response);
+  .then((cevap) => {
+    return writeFile('makale.html', cevap);
   })
   .then(() => {
-    console.log('File written');
+    console.log('Dosya yazildi');
   })
-  .catch((err) => {
-    console.error(err);
+  .catch((hata) => {
+    console.error(hata);
   });
 
 ```
 **[⬆ en başa dön](#içindekiler)**
 
-### Async/Await are even cleaner than Promises
-Promises are a very clean alternative to callbacks, but ES2017/ES8 brings async and await
-which offer an even cleaner solution. All you need is a function that is prefixed
-in an `async` keyword, and then you can write your logic imperatively without
-a `then` chain of functions. Use this if you can take advantage of ES2017/ES8 features
-today!
+### Async/Await ,Promise'den daha temizdir.
+Promiseler Callbacklere nazaran daha temizdir, fakat ES2017/ES8 daha 
+temiz bir çözüm sunan async await'i getirdi. Tek ihtiyacın `async` önekine sahip bir fonksiyon, 
+ve sonrasında `then`li fonksiyonlar zincirini kullanmaksızın 
+mantığını zorunlu olarak yazabilirsin. ES2017 / ES8 özelliklerinden yararlanabiliyorsanız bunu
+bugün kullanın!.
 
 **Kötü:**
 ```javascript
@@ -1772,14 +1766,14 @@ import { get } from 'request-promise';
 import { writeFile } from 'fs-promise';
 
 get('https://en.wikipedia.org/wiki/Robert_Cecil_Martin')
-  .then((response) => {
-    return writeFile('article.html', response);
+  .then((cevap) => {
+    return writeFile('makale.html', cevap);
   })
   .then(() => {
-    console.log('File written');
+    console.log('Dosya yazildi');
   })
-  .catch((err) => {
-    console.error(err);
+  .catch((hata) => {
+    console.error(hata);
   });
 
 ```
@@ -1789,220 +1783,214 @@ get('https://en.wikipedia.org/wiki/Robert_Cecil_Martin')
 import { get } from 'request-promise';
 import { writeFile } from 'fs-promise';
 
-async function getCleanCodeArticle() {
+async function temizKodMakalesiniAl() {
   try {
-    const response = await get('https://en.wikipedia.org/wiki/Robert_Cecil_Martin');
-    await writeFile('article.html', response);
-    console.log('File written');
-  } catch(err) {
-    console.error(err);
+    const cevap = await get('https://en.wikipedia.org/wiki/Robert_Cecil_Martin');
+    await writeFile('makale.html', cevap);
+    console.log('Dosya yazildi');
+  } catch(hata) {
+    console.error(hata);
   }
 }
 ```
 **[⬆ en başa dön](#içindekiler)**
 
 
-## **Error Handling**
-Thrown errors are a good thing! They mean the runtime has successfully
-identified when something in your program has gone wrong and it's letting
-you know by stopping function execution on the current stack, killing the
-process (in Node), and notifying you in the console with a stack trace.
+## **Hata Yakalama**
+Hatalar oluşturmak iyi bir şeydir. Hatalar size programınızda bir şeylerin yolunda olmadığını söylemenin en iyi yoludur.
+Çalışan bir kod parçacığı ya da çalışmayı durduran bir fonksiyonun, process'in neden durduğuna dair konsol ekranında sizi bilgilendirirler.
 
-### Don't ignore caught errors
-Doing nothing with a caught error doesn't give you the ability to ever fix
-or react to said error. Logging the error to the console (`console.log`)
-isn't much better as often times it can get lost in a sea of things printed
-to the console. If you wrap any bit of code in a `try/catch` it means you
-think an error may occur there and therefore you should have a plan,
-or create a code path, for when it occurs.
+### Yakalanan Hataları Görmezden Gelmeyin
+Yakalanan bir hata ile hiçbir şey gerçekleştirmemek, size o hatayı tamamen fixlemiş olma imkanı sunmaz.
+Hataları (`console.log`) ile göstermek, tıpkı suya yazı yazmak gibidir. Çoğu zaman yetersizdir.
+Eğer kod bölümlerini `try/catch` blokları ile oluşturuyorsanız o bölümde bir hatanın oluşabileceğini düşünüyorsunuzdur.
+Bu durumlar için bir planınız olmalı ya da bu durumları yönetebileceğiniz ayrı kod yapılarınız olmalı.
 
 **Kötü:**
 ```javascript
 try {
-  functionThatMightThrow();
-} catch (error) {
-  console.log(error);
+  hataFirlatabilecekFonksiyon();
+} catch (hata) {
+  console.log(hata);
 }
 ```
 
 **İyi:**
 ```javascript
 try {
-  functionThatMightThrow();
-} catch (error) {
-  // One option (more noisy than console.log):
-  console.error(error);
-  // Another option:
-  notifyUserOfError(error);
-  // Another option:
-  reportErrorToService(error);
-  // OR do all three!
+  hataFirlatabilecekFonksiyon();
+} catch (hata) {
+  // İlk seçenek (console.log'dan daha çok bilgilendirici):
+  console.error(hata);
+  // Diğer Seçenek:
+  kullaniciyaHataGoster(hata);
+  // Diğer Seçenek:
+  hatayiServiseBildir(hata);
+  // Ya da üçünü de yapabilirsiniz!!
 }
 ```
 
-### Don't ignore rejected promises
-For the same reason you shouldn't ignore caught errors
-from `try/catch`.
+### Promise Hatalarını Görmezden Gelmeyin
+Aynı sebepten dolayı `try/catch`'ten kaynaklanan hataları gözardı etmemelisiniz.
 
 **Kötü:**
 ```javascript
-getdata()
-  .then((data) => {
-    functionThatMightThrow(data);
+verileriGetir()
+  .then((veri) => {
+    fonksiyonHataFirlatabilir(veri);
   })
-  .catch((error) => {
-    console.log(error);
+  .catch((hata) => {
+    console.log(hata);
   });
 ```
 
 **İyi:**
 ```javascript
-getdata()
-  .then((data) => {
-    functionThatMightThrow(data);
+verileriGetir()
+  .then((veri) => {
+    fonksiyonHataFirlatabilir(veri);
   })
-  .catch((error) => {
-    // One option (more noisy than console.log):
-    console.error(error);
-    // Another option:
-    notifyUserOfError(error);
-    // Another option:
-    reportErrorToService(error);
-    // OR do all three!
+  .catch((hata) => {
+    // İlk seçenek (console.log'dan daha çok bilgilendirici):
+    console.error(hata);
+    // Diğer Seçenek:
+    kullaniciyaHataGoster(hata);
+    // Diğer Seçenek:
+    hatayiServiseBildir(hata);
+    // Ya da üçünü de yapabilirsiniz!!
   });
 ```
 
 **[⬆ en başa dön](#içindekiler)**
 
 
-## **Formatting**
-Formatting is subjective. Like many rules herein, there is no hard and fast
-rule that you must follow. The main point is DO NOT ARGUE over formatting.
-There are [tons of tools](http://standardjs.com/rules.html) to automate this.
-Use one! It's a waste of time and money for engineers to argue over formatting.
+## **Yazım Şekli**
+Yazım şekli özneldir. Buradaki birçok kural gibi, uymanız gereken zor ve 
+sıkı bir kural yoktur. Yazım şekli üzerinde TARTIŞMAYIN.
+Bunları otomatikleştirmek için [binlerce araç](http://standardjs.com/rules.html) vardır.
+Birini kullanın! Mühendisler için, yazım şekli üzerinde tartışmak zaman ve para kaybıdır.
 
-For things that don't fall under the purview of automatic formatting
-(indentation, tabs vs. spaces, double vs. single quotes, etc.) look here
-for some guidance.
+Otomatik formatlama kapsamına girmeyen şeyler
+(girintileme, tab veya boşluk, çift veya tek tırnak vb.) hakkında rehberlik
+için buraya bakın.
 
-### Use consistent capitalization
-JavaScript is untyped, so capitalization tells you a lot about your variables,
-functions, etc. These rules are subjective, so your team can choose whatever
-they want. The point is, no matter what you all choose, just be consistent.
+### Büyük harf kullanımınız tutarlı olsun
+JavaScript'in bir yazım kuralı yoktur, bu yüzden büyük harf kullanımı size değişkenler, 
+fonksiyonlar vb. şeyler hakkında birçok bilgi verir. Bu kurallar özneldir, yani ekibiniz istediğini
+seçebilir. Önemli olan neyi seçtiğiniz değildir, seçtiğinizde tutarlı olmanızdır.
 
 **Kötü:**
 ```javascript
-const DAYS_IN_WEEK = 7;
-const daysInMonth = 30;
+const HAFTANIN_GUN_SAYISI = 7;
+const ayinGunSayisi = 30;
 
-const songs = ['Back In Black', 'Stairway to Heaven', 'Hey Jude'];
-const Artists = ['ACDC', 'Led Zeppelin', 'The Beatles'];
+const sarkilar = ['Back In Black', 'Stairway to Heaven', 'Hey Jude'];
+const Sanatcilar = ['ACDC', 'Led Zeppelin', 'The Beatles'];
 
-function eraseDatabase() {}
-function restore_database() {}
+function veritabaniniSil() {}
+function veritabanini_kurtar() {}
 
-class animal {}
-class Alpaca {}
+class hayvan {}
+class Alpaka {}
 ```
 
 **İyi:**
 ```javascript
-const DAYS_IN_WEEK = 7;
-const DAYS_IN_MONTH = 30;
+const HAFTANIN_GUN_SAYISI = 7;
+const AYIN_GUN_SAYISI = 30;
 
-const SONGS = ['Back In Black', 'Stairway to Heaven', 'Hey Jude'];
-const ARTISTS = ['ACDC', 'Led Zeppelin', 'The Beatles'];
+const SARKILAR = ['Back In Black', 'Stairway to Heaven', 'Hey Jude'];
+const SANATCILAR = ['ACDC', 'Led Zeppelin', 'The Beatles'];
 
-function eraseDatabase() {}
-function restoreDatabase() {}
+function veritabaniniSil() {}
+function veritabaniniKurtar() {}
 
-class Animal {}
-class Alpaca {}
+class Hayvan {}
+class Alpaka {}
 ```
 **[⬆ en başa dön](#içindekiler)**
 
 
-### Function callers and callees should be close
-If a function calls another, keep those functions vertically close in the source
-file. Ideally, keep the caller right above the callee. We tend to read code from
-top-to-bottom, like a newspaper. Because of this, make your code read that way.
+### Çağırılan ve çağıran fonksiyonlar birbirine yakın olmalıdır.
+Eğer bir fonksiyon diğerini çağırıyorsa, kodda onları dikey olarak birbirine yakın tutun. İdeal olarak, çağıran fonksiyonu çağırılanın hemen üzerinde tutun. Kodları tıpkı gazete okur gibi
+yukarıdan aşağıya doğru okuruz. Bu nedenle, kodunuzun bu yolda okunabilmesini sağlayın.
 
 **Kötü:**
 ```javascript
-class PerformanceReview {
-  constructor(employee) {
-    this.employee = employee;
+class PerformansDegerlendirmesi {
+  constructor(calisan) {
+    this.calisan = calisan;
   }
 
-  lookupPeers() {
-    return db.lookup(this.employee, 'peers');
+  benzerleriniGetir() {
+    return db.lookup(this.calisan, 'benzer');
   }
 
-  lookupManager() {
-    return db.lookup(this.employee, 'manager');
+  mudurleriGetir() {
+    return db.lookup(this.calisan, 'mudur');
   }
 
-  getPeerReviews() {
-    const peers = this.lookupPeers();
+  benzerDegerlendirmeler() {
+    const benzerler = this.benzerleriniGetir();
     // ...
   }
 
-  perfReview() {
-    this.getPeerReviews();
-    this.getManagerReview();
-    this.getSelfReview();
+  performansDegerlendirmesi() {
+    this.benzerDegerlendirmeler();
+    this.mudurDegerlendirmeleri();
+    this.kendiDegerlendirmeleriGetir();
   }
 
-  getManagerReview() {
-    const manager = this.lookupManager();
+  mudurDegerlendirmeleri() {
+    const mudur = this.mudurleriGetir();
   }
 
-  getSelfReview() {
+  kendiDegerlendirmeleriGetir() {
     // ...
   }
 }
 
-const review = new PerformanceReview(employee);
-review.perfReview();
+const deegrlendirme = new PerformansDegerlendirmesi(calisan);
+deegrlendirme.performansDegerlendirmesi();
 ```
 
 **İyi:**
 ```javascript
-class PerformanceReview {
-  constructor(employee) {
-    this.employee = employee;
+class PerformansDegerlendirmesi {
+  constructor(calisan) {
+    this.calisan = calisan;
   }
 
-  perfReview() {
-    this.getPeerReviews();
-    this.getManagerReview();
-    this.getSelfReview();
+  performansDegerlendirmesi() {
+    this.benzerDegerlendirmeler();
+    this.mudurDegerlendirmeleri();
+    this.kendiDegerlendirmeleriGetir();
   }
 
-  getPeerReviews() {
-    const peers = this.lookupPeers();
+  benzerDegerlendirmeler() {
+    const benzer = this.benzerleriniGetir();
     // ...
   }
 
-  lookupPeers() {
-    return db.lookup(this.employee, 'peers');
+  benzerleriniGetir() {
+    return db.lookup(this.calisan, 'benzer');
   }
 
-  getManagerReview() {
-    const manager = this.lookupManager();
+  mudurDegerlendirmeleri() {
+    const mudur = this.mudurleriGetir();
   }
 
-  lookupManager() {
-    return db.lookup(this.employee, 'manager');
+  mudurleriGetir() {
+    return db.lookup(this.calisan, 'mudur');
   }
 
-  getSelfReview() {
+  kendiDegerlendirmeleriGetir() {
     // ...
   }
 }
 
-const review = new PerformanceReview(employee);
-review.perfReview();
+const degerlendirme = new PerformansDegerlendirmesi(calisan);
+degerlendirme.performansDegerlendirmesi();
 ```
 
 **[⬆ en başa dön](#içindekiler)**
@@ -2055,56 +2043,56 @@ function ozetCikar(veri) {
 ```
 **[⬆ en başa dön](#içindekiler)**
 
-### Don't leave commented out code in your codebase
-Version control exists for a reason. Leave old code in your history.
+### Kod tabanınızda yorum satırına alınmış kod bırakmayın.
+Sürüm kontrol sistemleri bu nedenle var. Eski kodu geçmişinizde bırakın.
 
 **Kötü:**
 ```javascript
-doStuff();
-// doOtherStuff();
-// doSomeMoreStuff();
-// doSoMuchStuff();
+birSeyYap();
+// baskaBirSeyYap();
+// birazDahaBirSeyYap();
+// dahaFazlaBirSeyYap();
 ```
 
 **İyi:**
 ```javascript
-doStuff();
+birSeyYap();
 ```
 **[⬆ en başa dön](#içindekiler)**
 
-### Don't have journal comments
-Remember, use version control! There's no need for dead code, commented code,
-and especially journal comments. Use `git log` to get history!
+### Yorum satırını günlüğe çevirmeyin
+Sürüm kontrol sistemlerini kullanmanız gerektiğini hatırlayın! Ölü koda, yorum satırına alınmış koda ve 
+özellikle günlüğe çevrilmiş yorum satırına gerek yok. Önceki yapılanları almak için `git log` komutunu kullanın!
 
 **Kötü:**
 ```javascript
 /**
- * 2016-12-20: Removed monads, didn't understand them (RM)
- * 2016-10-01: Improved using special monads (JP)
- * 2016-02-03: Removed type-checking (LI)
- * 2015-03-14: Added combine with type-checking (JR)
+ * 2016-12-20: Monadları kaldırdım, onları anlamadım (RM)
+ * 2016-10-01: Özel monadları kullanarak geliştirdim (JP)
+ * 2016-02-03: Tip denetimini kaldırdım (LI)
+ * 2015-03-14: Topla fonksiyonunu ekledim (JR)
  */
-function combine(a, b) {
+function topla(a, b) {
   return a + b;
 }
 ```
 
 **İyi:**
 ```javascript
-function combine(a, b) {
+function topla(a, b) {
   return a + b;
 }
 ```
 **[⬆ en başa dön](#içindekiler)**
 
-### Avoid positional markers
-They usually just add noise. Let the functions and variable names along with the
-proper indentation and formatting give the visual structure to your code.
+### Konum işaretleyicilerini kullanmaktan kaçının
+Onlar sadece kuru gürültüden ibaret. Fonksiyonlar ve değişkenlerin uygun girintilemeler,
+yoluyla kodunuza görsel şeklini vermesine izin verin.
 
 **Kötü:**
 ```javascript
 ////////////////////////////////////////////////////////////////////////////////
-// Scope Model Instantiation
+// Scope Model Örneği
 ////////////////////////////////////////////////////////////////////////////////
 $scope.model = {
   menu: 'foo',
@@ -2112,9 +2100,9 @@ $scope.model = {
 };
 
 ////////////////////////////////////////////////////////////////////////////////
-// Action setup
+// Eylem tanımlanması
 ////////////////////////////////////////////////////////////////////////////////
-const actions = function() {
+const eylemler = function() {
   // ...
 };
 ```
@@ -2126,7 +2114,7 @@ $scope.model = {
   nav: 'bar'
 };
 
-const actions = function() {
+const eylemler = function() {
   // ...
 };
 ```
